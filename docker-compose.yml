@@ -16,11 +16,6 @@ services:
               count: all
               capabilities: [gpu]
 
-    # Open ports you might need
-    ports:
-      - "8888:8888"   # Jupyter
-      - "6006:6006"   # TensorBoard
-
     # Give yourself a TTY you can attach to later
     tty: true
     stdin_open: true
