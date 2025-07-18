@@ -147,6 +147,7 @@ CLASS_MAPPING = {
     199: 131,
     200: 132,
 }
+MASK24 = 0xFFFFFF
 
 
 class COCOPanoptic(LightningDataModule):
@@ -178,23 +179,47 @@ class COCOPanoptic(LightningDataModule):
             scale_range=scale_range,
         )
 
+    # @staticmethod
+    # def target_parser(target, labels_by_id, is_crowd_by_id, **kwargs):
+    #     target = target[0, :, :] + target[1, :, :] * 256 + target[2, :, :] * 256**2
+
+    #     masks, labels, is_crowd = [], [], []
+
+    #     for label_id in target.unique():
+    #         if label_id.item() not in labels_by_id:
+    #             continue
+
+    #         cls_id = labels_by_id[label_id.item()]
+    #         if cls_id not in CLASS_MAPPING:
+    #             continue
+
+    #         masks.append(target == label_id)
+    #         labels.append(CLASS_MAPPING[cls_id])
+    #         is_crowd.append(is_crowd_by_id[label_id.item()])
+
+    #     return masks, labels, is_crowd
+
     @staticmethod
     def target_parser(target, labels_by_id, is_crowd_by_id, **kwargs):
-        target = target[0, :, :] + target[1, :, :] * 256 + target[2, :, :] * 256**2
+        target = target[0] + target[1] * 256 + target[2] * 256**2
+
+        # build a helper map where keys are truncated to 24 bits
+        by_id_24 = {k & MASK24: v for k, v in labels_by_id.items()}
+        crowd_24 = {k & MASK24: v for k, v in is_crowd_by_id.items()}
 
         masks, labels, is_crowd = [], [], []
-
-        for label_id in target.unique():
-            if label_id.item() not in labels_by_id:
+        for seg_id in target.unique():
+            sid = seg_id.item()
+            if sid not in by_id_24:
                 continue
 
-            cls_id = labels_by_id[label_id.item()]
+            cls_id = by_id_24[sid]
             if cls_id not in CLASS_MAPPING:
                 continue
 
-            masks.append(target == label_id)
+            masks.append(target == seg_id)
             labels.append(CLASS_MAPPING[cls_id])
-            is_crowd.append(is_crowd_by_id[label_id.item()])
+            is_crowd.append(crowd_24[sid])
 
         return masks, labels, is_crowd
 

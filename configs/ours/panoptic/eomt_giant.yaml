@@ -1,0 +1,31 @@
+trainer:
+  max_epochs: 12
+  logger:
+    class_path: lightning.pytorch.loggers.wandb.WandbLogger
+    init_args:
+      resume: allow
+      project: "eomt"
+      name: "ours_panoptic_eomt_large_640"
+      log_model: true
+model:
+  class_path: training.mask_classification_panoptic.MaskClassificationPanoptic
+  init_args:
+    attn_mask_annealing_enabled: True
+    attn_mask_annealing_start_steps: [14782, 25869, 36955, 48042, 59128]
+    attn_mask_annealing_end_steps: [29564, 40651, 51737, 62824, 73910]
+    weight_decay: 0
+    network:
+      class_path: models.eomt.EoMT
+      init_args:
+        num_q: 200
+        num_blocks: 5
+        encoder:
+          class_path: models.vit.ViT
+          init_args:
+            backbone_name: vit_giant_patch14_reg4_dinov2
+data:
+  class_path: datasets.coco_panoptic.COCOPanoptic
+  init_args:
+    img_size: [280, 518]
+    num_classes: 2
+    stuff_classes: []

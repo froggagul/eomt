@@ -138,7 +138,7 @@ class LightningModule(lightning.LightningModule):
                 )
 
         param_groups = backbone_param_groups + other_param_groups
-        optimizer = AdamW(param_groups, weight_decay=self.weight_decay)
+        optimizer = AdamW(param_groups, weight_decay=self.weight_decay, betas=(0.9, 0.99999))
 
         scheduler = TwoStageWarmupPolySchedule(
             optimizer,
