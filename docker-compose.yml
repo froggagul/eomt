@@ -1,0 +1,37 @@
+services:
+  eomt:
+    build: .
+    image: eomt:latest
+    container_name: eomt
+    working_dir: /workspace/eomt
+
+    # Keep the container alive in detached mode
+    command: ["sleep", "infinity"]
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    # Open ports you might need
+    ports:
+      - "8888:8888"   # Jupyter
+      - "6006:6006"   # TensorBoard
+
+    # Give yourself a TTY you can attach to later
+    tty: true
+    stdin_open: true
+
+    # Volumes
+    volumes:
+      - ./data:/workspace/data:ro
+      - ./checkpoints:/workspace/checkpoints
+      - ./wandb:/workspace/eomt/wandb
+      - .:/workspace/eomt   # hot‑reload source code
+
+    # Propagate the auto‑accept flag you added in the Dockerfile
+    environment:
+      - CONDA_PLUGINS_AUTO_ACCEPT_TOS=yes

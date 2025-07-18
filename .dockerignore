@@ -1,0 +1,68 @@
+# Docker ignore file for EoMT
+# Exclude files that shouldn't be copied to the Docker image
+
+# Git files
+.git/
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyTorch Lightning logs
+lightning_logs/
+
+# WandB logs (keep structure but not the large files)
+wandb/run-*/
+wandb/offline-run-*/files/
+wandb/debug*.log
+
+# Checkpoints (these are large files)
+*.ckpt
+eomt/*/checkpoints/
+
+# Data directories (should be mounted as volumes)
+data/
+datasets/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints
+
+# Docker files (avoid recursion)
+Dockerfile
+.dockerignore
